@@ -98,9 +98,14 @@ define(function (require, exports) {
                     case 'CatchClause':
                         scope = new symtab.Symtab(scope);
                         scope.global = false;
-                        scope.set(nd.param.name, nd.param);
 
-                        doVisit(nd.param);
+                        // process only if there is a catch value
+                        // try { ... } catch { ... } is now a valid syntax for JavaScript
+                        if (nd.param) {
+                            scope.set(nd.param.name, nd.param);
+                            doVisit(nd.param);
+                        }
+                        
                         doVisit(nd.body);
 
                         scope = scope.outer;
@@ -153,10 +158,12 @@ define(function (require, exports) {
                         // within params
                         for (let prop of nd.properties) {
                             if ((state['withinDeclarator'] || state['withinParams']) &&
+                                prop.value &&
                                 prop.value.type === 'Identifier' &&
                                 !decl_scope.hasOwn(prop.value.name))
                                 decl_scope.set(prop.value.name, prop.value);
 
+                            doVisit(prop.key);
                             doVisit(prop.value);
                         }
                         return false;

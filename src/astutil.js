@@ -8,7 +8,7 @@
  * http://www.eclipse.org/legal/epl-2.0.
  *******************************************************************************/
 
-const esprima = require('esprima');
+const acorn = require('acorn');
 const fs = require('fs');
 const vueParser = require('vue-parser');
 const prep = require('./srcPreprocessor');
@@ -109,7 +109,7 @@ function init(root) {
                 shorthand: boolean;
             }
         */
-        if (nd.type === 'FunctionExpression' && parent.type === 'Property') {
+        if (nd.type === 'FunctionExpression' && parent && parent.type === 'Property') {
             if (!parent.computed) {
                 if (parent.key.type === 'Identifier'){
                     nd.id = parent.key;
@@ -124,11 +124,11 @@ function init(root) {
                     };
                 }
                 else {
-                    console.log("WARNING: unexpected key type of 'Property'.");
+                    console.error("WARNING: unexpected key type of 'Property'.");
                 }
             }
             else
-                console.log("WARNING: Computed property for method definition, not yet supported.");
+                console.error("WARNING: Computed property for method definition, not yet supported.");
         }
 
         if (nd.type === 'FunctionDeclaration' ||
@@ -176,14 +176,14 @@ function init(root) {
                 }
                 else if (nd.key.type === 'Literal') {
                     // this case is covered by test case: tests/unexpected/stringiterator.truth
-                    console.log("WARNING: invalid syntax, method name is of type Literal instead of Identifier.");
+                    console.error("WARNING: invalid syntax, method name is of type Literal instead of Identifier.");
                 }
                 else {
-                    console.log("WARNING: unexpected key type of 'MethodDefinition'.");
+                    console.error("WARNING: unexpected key type of 'MethodDefinition'.");
                 }
             }
             else {
-                console.log("WARNING: Computed property for method definition, not yet supported.");
+                console.error("WARNING: Computed property for method definition, not yet supported.");
             }
 
         if (nd.type === 'CallExpression' || nd.type === 'NewExpression')
@@ -208,7 +208,7 @@ function isAnon(funcName) {
 // func must be function node in ast
 function funcname(func) {
     if (func === undefined)
-        console.log('WARNING: func undefined in astutil/funcname.');
+        console.error('WARNING: func undefined in astutil/funcname.');
     else if (func.id === null)
         return "anon";
     else
@@ -227,7 +227,7 @@ function encFuncName(encFunc) {
 
 /* Pretty-print position. */
 function ppPos(nd) {
-    return basename(nd.attr.enclosingFile) + "@" + nd.loc.start.line + ":" + nd.range[0] + "-" + nd.range[1];
+    return basename(nd.attr.enclosingFile) + "@" + nd.loc.start.line + ":" + nd.start + "-" + nd.end;
 }
 
 /* Build as AST from a collection of source files */
@@ -269,10 +269,10 @@ function astFromSrc(fname, src) {
 }
 
 function reportError(msg, err) {
-    console.log('-------------------------------------------');
-    console.log(msg);
-    console.log(err.stack);
-    console.log('-------------------------------------------');
+    console.error('-------------------------------------------');
+    console.error(msg);
+    console.error(err.stack);
+    console.error('-------------------------------------------');
 }
 
 /* Returns an ast node of type 'Program'
@@ -280,10 +280,10 @@ To avoid confusion caused by too many different parsing settings,
 please call this function whenever possible instead of rewriting esprima.parseModule...
 */
 function parse(src) {
-    return esprima.parseModule(src, {
-        loc: true,
-        range: true,
-        jsx: true
+    return acorn.parse(src, { 
+        ecmaVersion: 'latest', 
+        sourceType : 'module',
+        locations: true
     });
 }
 

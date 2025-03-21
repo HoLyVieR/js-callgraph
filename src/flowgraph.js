@@ -53,7 +53,15 @@ define(function (require, exports) {
                     break;
 
                 case 'CatchClause':
-                    flow_graph.addEdge(unknownVertex(), varVertex(nd.param));
+                    if (nd.param) {
+                        if (nd.param.type === 'ObjectPattern') {
+                            nd.param.properties.forEach(function (prop) {
+                                flow_graph.addEdge(unknownVertex(), varVertex(prop.value));    
+                            });
+                        } else {
+                            flow_graph.addEdge(unknownVertex(), varVertex(nd.param));
+                        }
+                    }
                     break;
 
                 // R3
@@ -133,7 +141,18 @@ define(function (require, exports) {
                 case 'ObjectPattern':
                     for (let prop of nd.properties)
                         // Assuming prop.key and prop.value are Identifers
-                        flow_graph.addEdge(propVertex(prop.key), vertexFor(prop.value));
+                        if (prop.key && prop.value) {
+                            // "Expression" are now a valid type for object property in object declaration ...
+                            // Ex.: var a = { [b == 4 ? "yes" : "no"] : "value" }
+                            if (
+                                    prop.key.type === 'Identifier' || 
+                                    prop.key.type === 'PrivateIdentifier' || 
+                                    prop.key.type === 'Literal'
+                                ) 
+                            {
+                                flow_graph.addEdge(propVertex(prop.key), vertexFor(prop.value));
+                            }
+                        }
                     break;
 
                 // ES6 rule, similar to array expression
@@ -186,16 +205,18 @@ define(function (require, exports) {
                 break;
             case 'MemberExpression':
                 // ignore dynamic property accesses
-                if (!nd.computed)
+                if (!nd.computed) {
                     return propVertex(nd.property);
+                }
         }
         return exprVertex(nd);
     }
 
     // variable vertices are cached at the variable declarations
     function varVertex(nd) {
-        if (nd.type !== 'Identifier')
+        if (nd.type !== 'Identifier' && nd.type !== 'PrivateIdentifier') {
             throw new Error("invalid variable vertex");
+        }
 
         return nd.attr.var_vertex
             || (nd.attr.var_vertex = {
@@ -213,7 +234,7 @@ define(function (require, exports) {
     // retrieve property vertex from cache, or create new one
     function propVertex(nd) {
         var p;
-        if (nd.type === 'Identifier')
+        if (nd.type === 'Identifier' || nd.type === 'PrivateIdentifier')
             p = nd.name;
         else if (nd.type === 'Literal')
             // this case handles array, property field: 0, 1, 2...

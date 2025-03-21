@@ -43,7 +43,7 @@ define(function (require, exports) {
             edge.file = nd.attr.enclosingFile;
             edge.start = {row: nd.loc.start.line, column: nd.loc.start.column};
             edge.end = {row: nd.loc.end.line, column: nd.loc.end.column};
-            edge.range = {start: nd.range[0], end: nd.range[1]};
+            edge.range = {start: nd.start, end: nd.end};
             return edge;
         }
         if (v.type === 'FuncVertex') {
@@ -51,7 +51,7 @@ define(function (require, exports) {
             edge.file = v.func.attr.enclosingFile;
             edge.start = {row: v.func.loc.start.line, column: v.func.loc.start.column};
             edge.end = {row: v.func.loc.end.line, column: v.func.loc.end.column};
-            edge.range = {start: v.func.range[0], end: v.func.range[1]};
+            edge.range = {start: v.func.start, end: v.func.end};
             return edge;
         }
         if (v.type === 'NativeVertex') {
