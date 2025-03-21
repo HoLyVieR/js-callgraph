@@ -169,7 +169,7 @@ define(function (require, exports) {
                     break;
 
                 case 'MethodDefinition':
-                    if (nd.key.type === 'Identifier')
+                    if (nd.key.type === 'Identifier' || nd.key.type === 'PrivateIdentifier' )
                         flow_graph.addEdge(funcVertex(nd.value), propVertex(nd.key))
                     break;
 

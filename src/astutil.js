@@ -171,7 +171,7 @@ function init(root) {
         */
         if (nd.type === 'MethodDefinition')
             if (!nd.computed) {
-                if (nd.key.type === 'Identifier') {
+                if (nd.key.type === 'Identifier' || nd.key.type === 'PrivateIdentifier') {
                     nd.value.id = nd.key;
                 }
                 else if (nd.key.type === 'Literal') {
