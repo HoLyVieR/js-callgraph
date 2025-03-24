@@ -227,7 +227,7 @@ function encFuncName(encFunc) {
 
 /* Pretty-print position. */
 function ppPos(nd) {
-    return basename(nd.attr.enclosingFile) + "@" + nd.loc.start.line + ":" + nd.start + "-" + nd.end;
+    return nd.attr.enclosingFile + "@" + nd.loc.start.line + ":" + nd.start + "-" + nd.end;
 }
 
 /* Build as AST from a collection of source files */

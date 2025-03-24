@@ -198,7 +198,7 @@ function addNamedExport(expFuncs, fname, local, exportedName) {
     */
     exportedName = mangle(exportedName);
     if (expFuncs[fname]['named'].hasOwnProperty(exportedName))
-        console.log('WARNING: Re-assignment in addNamedExport.');
+        console.warn('WARNING: Re-assignment in addNamedExport.');
 
     expFuncs[fname]['named'][exportedName] = local;
 }

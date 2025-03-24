@@ -240,7 +240,7 @@ define(function (require, exports) {
                 }
             }
             else {
-                console.log("WARNING: fileName doesn't exist in _fileToNodes.");
+                console.error("WARNING: fileName doesn't exist in _fileToNodes.");
             }
         }
     }

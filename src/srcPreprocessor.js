@@ -34,10 +34,10 @@ function applyPreps(src, fname, prepNames) {
 			src = nameToFunc[prepName](src);
 	}
 	catch (err) {
-        console.log('-------------------------------------------');
-        console.log('Warning: Preprocessing errored ' + fname);
-        console.log(err.stack);
-        console.log('-------------------------------------------');
+        console.warn('-------------------------------------------');
+        console.warn('Warning: Preprocessing errored ' + fname);
+        console.warn(err.stack);
+        console.warn('-------------------------------------------');
         return null;
 	}
 	return src;
