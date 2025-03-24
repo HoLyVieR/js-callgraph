@@ -112,6 +112,7 @@ define(function (require, exports) {
                         return false;
 
                     case 'Identifier':
+                    case 'PrivateIdentifier':
                     case 'ThisExpression':
                         nd.attr.scope = decl_scope;
                         break;
