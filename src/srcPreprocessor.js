@@ -86,7 +86,7 @@ Plugins:
 function typescriptPrep(fname, src) {
     return babel.transform(src, {
         presets: ["@babel/preset-typescript"],
-        plugins: ["@babel/plugin-proposal-class-properties", "@babel/plugin-transform-private-methods", "@babel/plugin-proposal-decorators", {"legacy": true}],
+        plugins: ["@babel/plugin-proposal-class-properties", "@babel/plugin-transform-private-methods", "@babel/plugin-proposal-decorators", {version: "legacy"}],
         filename: fname,
         retainLines: true,
         parserOpts: {strictMode: false}
