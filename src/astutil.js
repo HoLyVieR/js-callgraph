@@ -325,8 +325,14 @@ function buildProgram (fname, src) {
         prog = parse(src);
     }
     catch(err) {
-        reportError('Warning: Esprima failed to parse ' + fname, err);
-        return null;
+        // maybe it's actually typescript ?
+        try {
+            tssrc = prep.typescriptPrep(fname, src);
+            prog = parse(tssrc);
+        } catch(err2) {
+            reportError('Warning: Esprima failed to parse ' + fname, err);
+            return null;
+        }
     }
     prog.attr = {filename: fname};
     return prog;
